@@ -12,10 +12,14 @@ st.set_page_config(
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-DASHBOARD_DIR = ROOT_DIR / "outputs" / "dashboard-public"
+APP_DIR = Path(__file__).resolve().parent
+LOCAL_DASHBOARD_DIR = APP_DIR / "dashboard_assets"
+PROJECT_DASHBOARD_DIR = ROOT_DIR / "outputs" / "dashboard-public"
+DASHBOARD_DIR = LOCAL_DASHBOARD_DIR if (LOCAL_DASHBOARD_DIR / "index.html").exists() else PROJECT_DASHBOARD_DIR
 INDEX_PATH = DASHBOARD_DIR / "index.html"
 STYLE_PATH = DASHBOARD_DIR / "style.css"
 APP_JS_PATH = DASHBOARD_DIR / "app.js"
+DASHBOARD_HEIGHT = 2400
 
 
 def main():
@@ -24,7 +28,7 @@ def main():
     if html is None:
         return
 
-    components.html(html, height=1600, scrolling=True)
+    components.html(html, height=DASHBOARD_HEIGHT, scrolling=True)
 
 
 def hide_streamlit_chrome():
@@ -41,6 +45,11 @@ html, body, [data-testid="stAppViewContainer"], .stApp {
 [data-testid="stSidebar"],
 [data-testid="stToolbar"],
 [data-testid="stDecoration"],
+[data-testid="stStatusWidget"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"],
+[data-testid="stElementToolbar"],
+.stDeployButton,
 #MainMenu,
 footer {
   display: none !important;
@@ -53,9 +62,18 @@ footer {
   margin: 0 !important;
 }
 
+[data-testid="stVerticalBlock"],
+[data-testid="stVerticalBlockBorderWrapper"],
+[data-testid="stElementContainer"] {
+  gap: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
 iframe {
   display: block;
   width: 100%;
+  min-height: 100vh;
   border: 0;
 }
 </style>
@@ -75,6 +93,7 @@ def build_embedded_dashboard():
     index_html = INDEX_PATH.read_text(encoding="utf-8")
     style_css = STYLE_PATH.read_text(encoding="utf-8")
     app_js = APP_JS_PATH.read_text(encoding="utf-8")
+    safe_app_js = app_js.replace("</script>", "<\\/script>")
 
     html = index_html.replace(
         '<link rel="stylesheet" href="./style.css" />',
@@ -82,7 +101,7 @@ def build_embedded_dashboard():
     )
     html = html.replace(
         '<script src="./app.js"></script>',
-        f"<script>\n{app_js}\n</script>",
+        f"<script>\n{safe_app_js}\n</script>",
     )
     html = html.replace(
         "</head>",
