@@ -1,0 +1,7 @@
+interface:
+  display_name: "Qingyan Huoge Lead Agent"
+  short_description: "Traceable research-prototyping lead workflow"
+  default_prompt: "Use $qingyan-huoge-lead-agent to identify and prioritize research prototyping leads with traceable evidence."
+
+policy:
+  allow_implicit_invocation: true
