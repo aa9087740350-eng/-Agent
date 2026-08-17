@@ -2,6 +2,8 @@
 
 这是“清研霍格精工拓客智能体”的 Streamlit 空框架复核台。
 
+Streamlit 版本直接嵌入 `outputs/dashboard-public/index.html`，并内联同目录下的 `style.css` 和 `app.js`，因此视觉和交互与本地静态复核台保持一致。
+
 ## 本地运行
 
 ```text
@@ -37,6 +39,7 @@ streamlit_app/requirements.txt
 ## 数据边界
 
 - App 不内置任何线索数据。
-- 客户经理需要手动上传主控生成的 `latest-run.json`。
+- 客户经理需要在页面内部点击“导入 JSON”，上传主控生成的 `latest-run.json`。
 - 不要把真实 `latest-run.json`、`latest-run.js`、Excel、联系人文件提交到 GitHub。
-- Streamlit 云端部署时，上传的 JSON 会被 App 后端读取处理；涉及真实联系方式时，建议使用受限访问或私有部署。
+- JSON 在嵌入的前端页面中读取和展示，不通过 Streamlit 的 `st.file_uploader` 上传到后端。
+- 涉及真实联系方式时，仍建议使用受限访问或私有部署。
